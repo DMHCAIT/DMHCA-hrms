@@ -1,9 +1,13 @@
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
-import { CssBaseline } from '@mui/material';
+import { CssBaseline, Box } from '@mui/material';
 import theme from './theme';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { DataProvider } from './providers/DataProvider';
+import ProtectedRoute from './components/ProtectedRoute';
+import Header from './components/common/Header';
+import EmployeeDashboard from './components/employee/EmployeeDashboard';
 import { Layout } from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Employees from './pages/Employees';
@@ -15,14 +19,27 @@ import Calendar from './pages/Calendar';
 import TimeTracking from './pages/TimeTracking';
 import Worksheets from './pages/Worksheets';
 import AttendanceMachineManagement from './pages/AttendanceMachineManagement';
-// RS 9W integration removed
 
-function App() {
+// Main app content component that uses auth context
+const AppContent: React.FC = () => {
+  const { isAdmin, isEmployee, loading } = useAuth();
+
+  if (loading) {
+    return null; // ProtectedRoute will show loading spinner
+  }
+
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <DataProvider>
-        <Router>
+    <DataProvider>
+      <Router>
+        {/* Show different layouts based on user role */}
+        {isEmployee() && !isAdmin() ? (
+          // Employee-only view with limited access
+          <Box>
+            <Header title="Employee Portal" />
+            <EmployeeDashboard />
+          </Box>
+        ) : isAdmin() ? (
+          // Admin view with full access to all features
           <Layout>
             <Routes>
               <Route path="/" element={<Dashboard />} />
@@ -35,10 +52,24 @@ function App() {
               <Route path="/worksheets" element={<Worksheets />} />
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/attendance-machines" element={<AttendanceMachineManagement />} />
+              <Route path="/employee-view" element={<EmployeeDashboard />} />
             </Routes>
           </Layout>
-        </Router>
-      </DataProvider>
+        ) : null}
+      </Router>
+    </DataProvider>
+  );
+};
+
+function App() {
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <AuthProvider>
+        <ProtectedRoute>
+          <AppContent />
+        </ProtectedRoute>
+      </AuthProvider>
     </ThemeProvider>
   );
 }
