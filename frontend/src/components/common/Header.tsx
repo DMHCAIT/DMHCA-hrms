@@ -19,6 +19,7 @@ import {
   Logout,
   Settings,
   Dashboard,
+  CalendarToday,
 } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -138,12 +139,21 @@ const Header: React.FC<HeaderProps> = ({ title = 'DMHCA HRMS' }) => {
               
               <Divider />
               
-              <MenuItem onClick={handleMenuClose}>
+              <MenuItem onClick={() => { handleMenuClose(); window.location.href = '/'; }}>
                 <ListItemIcon>
                   <Dashboard fontSize="small" />
                 </ListItemIcon>
                 <ListItemText>Dashboard</ListItemText>
               </MenuItem>
+
+              {!isAdmin() && (
+                <MenuItem onClick={() => { handleMenuClose(); window.location.href = '/leave'; }}>
+                  <ListItemIcon>
+                    <CalendarToday fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>My Leaves</ListItemText>
+                </MenuItem>
+              )}
               
               <MenuItem onClick={handleMenuClose}>
                 <ListItemIcon>
@@ -152,7 +162,7 @@ const Header: React.FC<HeaderProps> = ({ title = 'DMHCA HRMS' }) => {
                 <ListItemText>Profile</ListItemText>
               </MenuItem>
               
-              <MenuItem onClick={handleMenuClose}>
+              <MenuItem onClick={() => { handleMenuClose(); window.location.href = '/settings'; }}>
                 <ListItemIcon>
                   <Settings fontSize="small" />
                 </ListItemIcon>

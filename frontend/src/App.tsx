@@ -8,6 +8,8 @@ import { DataProvider } from './providers/DataProvider';
 import ProtectedRoute from './components/ProtectedRoute';
 import Header from './components/common/Header';
 import EmployeeDashboard from './components/employee/EmployeeDashboard';
+import EmployeeSettings from './components/employee/EmployeeSettings';
+import EmployeeLeaveManagement from './components/employee/EmployeeLeaveManagement';
 import { Layout } from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Employees from './pages/Employees';
@@ -36,7 +38,11 @@ const AppContent: React.FC = () => {
           // Employee-only view with limited access
           <Box>
             <Header title="Employee Portal" />
-            <EmployeeDashboard />
+            <Routes>
+              <Route path="/" element={<EmployeeDashboard />} />
+              <Route path="/leave" element={<EmployeeLeaveManagement />} />
+              <Route path="/settings" element={<EmployeeSettings />} />
+            </Routes>
           </Box>
         ) : isAdmin() ? (
           // Admin view with full access to all features
@@ -53,6 +59,8 @@ const AppContent: React.FC = () => {
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/attendance-machines" element={<AttendanceMachineManagement />} />
               <Route path="/employee-view" element={<EmployeeDashboard />} />
+              <Route path="/my-leave" element={<EmployeeLeaveManagement />} />
+              <Route path="/settings" element={<EmployeeSettings />} />
             </Routes>
           </Layout>
         ) : null}

@@ -36,6 +36,8 @@ import {
   Search,
 } from '@mui/icons-material';
 import { supabaseService } from '../services/supabase';
+import { useAuth } from '../contexts/AuthContext';
+import CreateEmployeeDialog from '../components/admin/CreateEmployeeDialog';
 
 interface Employee {
   id?: number;
@@ -69,9 +71,11 @@ interface Branch {
 }
 
 const Employees: React.FC = () => {
+  const { isAdmin } = useAuth();
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
+  const [createEmployeeDialogOpen, setCreateEmployeeDialogOpen] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterDepartment, setFilterDepartment] = useState('all');
@@ -321,14 +325,16 @@ const Employees: React.FC = () => {
             <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
               Employees Management
             </Typography>
-            <Button
-              variant="contained"
-              startIcon={<Add />}
-              onClick={() => handleOpenDialog()}
-              disabled={loading}
-            >
-              Add Employee
-            </Button>
+            {isAdmin() && (
+              <Button
+                variant="contained"
+                startIcon={<Add />}
+                onClick={() => setCreateEmployeeDialogOpen(true)}
+                disabled={loading}
+              >
+                Add Employee
+              </Button>
+            )}
           </Box>
 
           {/* Filters */}
@@ -648,6 +654,17 @@ const Employees: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Create Employee Dialog */}
+      <CreateEmployeeDialog
+        open={createEmployeeDialogOpen}
+        onClose={() => setCreateEmployeeDialogOpen(false)}
+        onSuccess={() => {
+          loadInitialData(); // Refresh employee list
+          setSnackbarMessage('Employee account created successfully!');
+          setSnackbarOpen(true);
+        }}
+      />
 
       {/* Snackbar for notifications */}
       <Snackbar

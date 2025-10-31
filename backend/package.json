@@ -7,15 +7,21 @@
     "start": "node realtime-server.js",
     "setup": "node setup-realtime.js",
     "test": "node test-integration.js",
-    "dev": "node realtime-server.js"
+    "dev": "node realtime-server.js",
+    "user-api": "node user-management-api.js",
+    "user-api:dev": "nodemon user-management-api.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.76.1",
     "cors": "^2.8.5",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.1.5",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
-    "@types/node": "^24.6.0"
+    "@types/node": "^24.6.0",
+    "nodemon": "^3.0.2"
   },
   "engines": {
     "node": ">=18.0.0"

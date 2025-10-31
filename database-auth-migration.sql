@@ -19,27 +19,8 @@ UPDATE employees
 SET role = 'admin' 
 WHERE id = (SELECT id FROM employees ORDER BY created_at LIMIT 1);
 
--- Sample data - Insert admin user (modify as needed)
--- Note: You'll need to create these users in Supabase Auth first
-INSERT INTO employees (
-  employee_id, 
-  first_name, 
-  last_name, 
-  email, 
-  role, 
-  department, 
-  position, 
-  phone,
-  hire_date,
-  status
-) VALUES 
--- Admin user
-('EMP001', 'Admin', 'User', 'admin@dmhca.com', 'admin', 'IT', 'System Administrator', '+1234567890', CURRENT_DATE, 'active'),
--- Employee user
-('EMP002', 'John', 'Doe', 'john.doe@dmhca.com', 'employee', 'Operations', 'Operations Manager', '+1234567891', CURRENT_DATE, 'active'),
--- Another employee
-('EMP003', 'Jane', 'Smith', 'jane.smith@dmhca.com', 'employee', 'HR', 'HR Specialist', '+1234567892', CURRENT_DATE, 'active')
-ON CONFLICT (employee_id) DO NOTHING;
+-- No sample data - use real employee data instead
+-- Admin users will be created through the admin interface
 
 -- Enable Row Level Security (RLS) for better security
 ALTER TABLE employees ENABLE ROW LEVEL SECURITY;
@@ -116,11 +97,128 @@ CREATE OR REPLACE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION link_auth_user_to_employee();
 
+-- Additional functions for user management
+
+-- Function to create employee account with auth user
+CREATE OR REPLACE FUNCTION create_employee_with_auth(
+  p_email TEXT,
+  p_password TEXT,
+  p_employee_id TEXT,
+  p_first_name TEXT,
+  p_last_name TEXT,
+  p_role TEXT DEFAULT 'employee',
+  p_department TEXT DEFAULT NULL,
+  p_position TEXT DEFAULT NULL,
+  p_phone TEXT DEFAULT NULL
+)
+RETURNS JSON AS $$
+DECLARE
+  v_user_id UUID;
+  v_employee_record RECORD;
+BEGIN
+  -- Create auth user (this would typically be done via Supabase Admin API)
+  -- For now, just insert the employee record and they'll need to be created in Supabase Auth
+  
+  -- Insert employee record
+  INSERT INTO employees (
+    employee_id, 
+    first_name, 
+    last_name, 
+    email, 
+    role, 
+    department, 
+    position, 
+    phone,
+    hire_date,
+    status
+  ) VALUES (
+    p_employee_id,
+    p_first_name,
+    p_last_name,
+    p_email,
+    p_role,
+    p_department,
+    p_position,
+    p_phone,
+    CURRENT_DATE,
+    'active'
+  ) RETURNING * INTO v_employee_record;
+
+  RETURN json_build_object(
+    'success', true,
+    'employee_id', v_employee_record.employee_id,
+    'message', 'Employee created successfully. Auth account needs to be created in Supabase Auth.'
+  );
+EXCEPTION
+  WHEN OTHERS THEN
+    RETURN json_build_object(
+      'success', false,
+      'error', SQLERRM
+    );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Function to update employee password (placeholder - actual password changes happen in Supabase Auth)
+CREATE OR REPLACE FUNCTION update_employee_profile(
+  p_employee_id TEXT,
+  p_first_name TEXT DEFAULT NULL,
+  p_last_name TEXT DEFAULT NULL,
+  p_phone TEXT DEFAULT NULL,
+  p_department TEXT DEFAULT NULL,
+  p_position TEXT DEFAULT NULL
+)
+RETURNS JSON AS $$
+DECLARE
+  v_current_user_id UUID;
+  v_is_admin BOOLEAN;
+  v_is_own_record BOOLEAN;
+BEGIN
+  -- Get current user
+  v_current_user_id := auth.uid();
+  
+  -- Check if user is admin
+  SELECT (role = 'admin') INTO v_is_admin
+  FROM employees 
+  WHERE auth_user_id = v_current_user_id;
+  
+  -- Check if updating own record
+  SELECT (employee_id = p_employee_id) INTO v_is_own_record
+  FROM employees 
+  WHERE auth_user_id = v_current_user_id;
+  
+  -- Only allow if admin or own record
+  IF NOT (v_is_admin OR v_is_own_record) THEN
+    RETURN json_build_object(
+      'success', false,
+      'error', 'Unauthorized: Cannot update this employee record'
+    );
+  END IF;
+
+  -- Update employee record
+  UPDATE employees 
+  SET 
+    first_name = COALESCE(p_first_name, first_name),
+    last_name = COALESCE(p_last_name, last_name),
+    phone = COALESCE(p_phone, phone),
+    department = CASE WHEN v_is_admin THEN COALESCE(p_department, department) ELSE department END,
+    position = CASE WHEN v_is_admin THEN COALESCE(p_position, position) ELSE position END,
+    updated_at = NOW()
+  WHERE employee_id = p_employee_id;
+
+  RETURN json_build_object(
+    'success', true,
+    'message', 'Employee profile updated successfully'
+  );
+EXCEPTION
+  WHEN OTHERS THEN
+    RETURN json_build_object(
+      'success', false,
+      'error', SQLERRM
+    );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- Instructions:
 -- 1. Run this migration in your Supabase SQL editor
--- 2. In Supabase Auth, create user accounts for the emails above:
---    - admin@dmhca.com (password: admin123 - change this!)
---    - john.doe@dmhca.com (password: employee123)
---    - jane.smith@dmhca.com (password: employee123)
--- 3. The trigger will automatically link auth users to employee records
--- 4. Update the id column in employees table to match auth.users(id) if needed
+-- 2. Use the admin interface to create employee accounts
+-- 3. The system will handle auth user creation and linking automatically
