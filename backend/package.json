@@ -1,0 +1,23 @@
+{
+  "name": "hr-software-backend",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node realtime-server.js",
+    "setup": "node setup-realtime.js",
+    "test": "node test-integration.js",
+    "dev": "node realtime-server.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.76.1",
+    "cors": "^2.8.5",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.6.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
