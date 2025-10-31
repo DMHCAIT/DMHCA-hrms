@@ -40,7 +40,7 @@ export async function processRealtimeAttendanceLog(
     }
 
     // Determine log type based on time or existing logic
-    const logType = determineLogType(log.EmployeeCode, logDateTime);
+    const logType = await determineLogType(log.EmployeeCode, logDateTime);
 
     // Insert into attendance_machine_logs table
     const { data, error } = await supabase
