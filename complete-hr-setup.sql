@@ -28,15 +28,7 @@ VALUES
     ('Emergency Leave', 3, 2, 0, 'Emergency situations', '#F44336')
 ON CONFLICT (leave_type) DO NOTHING;
 
--- 4. CREATE SAMPLE ATTENDANCE MACHINES
-INSERT INTO attendance_machines (machine_id, ip_address, port, location, device_model)
-VALUES 
-    ('MACHINE001', '192.168.1.100', 4370, 'Main Entrance', 'ZKTeco K40'),
-    ('MACHINE002', '192.168.1.101', 4370, 'Back Entrance', 'ZKTeco K50'),
-    ('MACHINE003', '192.168.1.102', 4370, 'IT Floor', 'ZKTeco F18')
-ON CONFLICT (machine_id) DO NOTHING;
-
--- 5. LINK EMPLOYEES TO DEPARTMENTS AND BRANCHES
+-- 4. LINK EMPLOYEES TO DEPARTMENTS AND BRANCHES
 DO $$
 DECLARE 
     admin_dept_id INTEGER;
@@ -116,7 +108,6 @@ SELECT 'Departments Created' as category, COUNT(*) as count FROM departments;
 SELECT 'Branches Created' as category, COUNT(*) as count FROM branches;
 SELECT 'Leave Policies Created' as category, COUNT(*) as count FROM leave_policies;  
 SELECT 'Leave Balances Created' as category, COUNT(*) as count FROM employee_leave_balances;
-SELECT 'Attendance Machines Created' as category, COUNT(*) as count FROM attendance_machines;
 SELECT 'Holidays Created' as category, COUNT(*) as count FROM leave_calendar;
 
 RAISE NOTICE '🎉 COMPLETE HR SYSTEM SETUP FINISHED!';
@@ -124,7 +115,6 @@ RAISE NOTICE 'Your database now has:';
 RAISE NOTICE '- Demo employees with proper roles';
 RAISE NOTICE '- Departments and branches';  
 RAISE NOTICE '- Leave policies and balances';
-RAISE NOTICE '- Attendance machines configured';
 RAISE NOTICE '- Holiday calendar';
 RAISE NOTICE '';
 RAISE NOTICE '🚀 Ready for full HR system testing!';

@@ -14,7 +14,6 @@ import Payroll from './pages/Payroll';
 import Calendar from './pages/Calendar';
 import TimeTracking from './pages/TimeTracking';
 import Worksheets from './pages/Worksheets';
-import AttendanceMachineManagement from './pages/AttendanceMachineManagement';
 import EmployeeDashboard from './components/employee/EmployeeDashboard';
 import EmployeeSettings from './components/employee/EmployeeSettings';
 import EmployeeLeaveManagement from './components/employee/EmployeeLeaveManagement';
@@ -36,7 +35,6 @@ const AppContent: React.FC = () => {
             <Route path="/payroll" element={<Payroll />} />
             <Route path="/worksheets" element={<Worksheets />} />
             <Route path="/calendar" element={<Calendar />} />
-            <Route path="/attendance-machines" element={<AttendanceMachineManagement />} />
             <Route path="/employee-view" element={<EmployeeDashboard />} />
             <Route path="/my-leave" element={<EmployeeLeaveManagement />} />
             <Route path="/settings" element={<EmployeeSettings />} />
