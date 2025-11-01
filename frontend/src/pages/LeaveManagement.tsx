@@ -13,7 +13,6 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Grid,
   Chip,
   CircularProgress,
   LinearProgress,
@@ -28,16 +27,13 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Divider,
   Avatar,
   Stack
 } from '@mui/material';
 import {
-  EventNote,
   ArrowForward,
   CalendarToday,
   People,
-  TrendingUp,
   CheckCircle,
   Schedule,
   Warning,
@@ -146,7 +142,7 @@ const LeaveManagement: React.FC = () => {
     const statuses: ('pending' | 'approved' | 'rejected')[] = ['pending', 'approved', 'rejected'];
     const applications: LeaveApplication[] = [];
     
-    employees.forEach((emp, index) => {
+    employees.forEach((emp) => {
       for (let i = 0; i < 3; i++) {
         const startDate = new Date();
         startDate.setDate(startDate.getDate() + Math.random() * 60);
@@ -245,88 +241,85 @@ const LeaveManagement: React.FC = () => {
       </Box>
 
       {/* Summary Cards */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Box>
-                  <Typography color="textSecondary" gutterBottom variant="overline">
-                    Total Employees
-                  </Typography>
-                  <Typography variant="h4" component="div">
-                    {totalEmployees}
-                  </Typography>
-                </Box>
-                <Avatar sx={{ bgcolor: 'primary.main' }}>
-                  <People />
-                </Avatar>
+      <Box sx={{ 
+        display: 'grid', 
+        gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, 
+        gap: 3, 
+        mb: 4 
+      }}>
+        <Card>
+          <CardContent>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography color="textSecondary" gutterBottom variant="overline">
+                  Total Employees
+                </Typography>
+                <Typography variant="h4" component="div">
+                  {totalEmployees}
+                </Typography>
               </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Box>
-                  <Typography color="textSecondary" gutterBottom variant="overline">
-                    Total Applications
-                  </Typography>
-                  <Typography variant="h4" component="div">
-                    {totalApplications}
-                  </Typography>
-                </Box>
-                <Avatar sx={{ bgcolor: 'info.main' }}>
-                  <CalendarToday />
-                </Avatar>
+              <Avatar sx={{ bgcolor: 'primary.main' }}>
+                <People />
+              </Avatar>
+            </Box>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography color="textSecondary" gutterBottom variant="overline">
+                  Total Applications
+                </Typography>
+                <Typography variant="h4" component="div">
+                  {totalApplications}
+                </Typography>
               </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Box>
-                  <Typography color="textSecondary" gutterBottom variant="overline">
-                    Pending Approval
-                  </Typography>
-                  <Typography variant="h4" component="div">
-                    {pendingApplications}
-                  </Typography>
-                </Box>
-                <Avatar sx={{ bgcolor: 'warning.main' }}>
-                  <Schedule />
-                </Avatar>
+              <Avatar sx={{ bgcolor: 'info.main' }}>
+                <CalendarToday />
+              </Avatar>
+            </Box>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography color="textSecondary" gutterBottom variant="overline">
+                  Pending Approval
+                </Typography>
+                <Typography variant="h4" component="div">
+                  {pendingApplications}
+                </Typography>
               </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Box>
-                  <Typography color="textSecondary" gutterBottom variant="overline">
-                    Approved Today
-                  </Typography>
-                  <Typography variant="h4" component="div">
-                    {approvedApplications}
-                  </Typography>
-                </Box>
-                <Avatar sx={{ bgcolor: 'success.main' }}>
-                  <CheckCircle />
-                </Avatar>
+              <Avatar sx={{ bgcolor: 'warning.main' }}>
+                <Schedule />
+              </Avatar>
+            </Box>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography color="textSecondary" gutterBottom variant="overline">
+                  Approved Today
+                </Typography>
+                <Typography variant="h4" component="div">
+                  {approvedApplications}
+                </Typography>
               </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+              <Avatar sx={{ bgcolor: 'success.main' }}>
+                <CheckCircle />
+              </Avatar>
+            </Box>
+          </CardContent>
+        </Card>
+      </Box>
 
       {/* Tabs */}
       <Paper sx={{ width: '100%' }}>
-        <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)} sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs value={tabValue} onChange={(_, newValue) => setTabValue(newValue)} sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tab label="Leave Applications" />
           <Tab label="Leave Balances" />
           <Tab label="Advanced Features" />
@@ -456,63 +449,63 @@ const LeaveManagement: React.FC = () => {
         {/* Advanced Features Tab */}
         {tabValue === 2 && (
           <Box sx={{ p: 3 }}>
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
-                <Card sx={{ 
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
-                  color: 'white',
-                  cursor: 'pointer',
-                  '&:hover': { transform: 'translateY(-4px)', transition: 'all 0.3s ease' }
-                }}>
-                  <CardContent sx={{ p: 3 }}>
-                    <Typography variant="h6" gutterBottom>
-                      Basic Leave System
-                    </Typography>
-                    <Typography variant="body2" sx={{ mb: 2 }}>
-                      Simple leave requests and approvals with basic functionality.
-                    </Typography>
-                    <Alert severity="warning" sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'white' }}>
-                      Limited features available
-                    </Alert>
-                  </CardContent>
-                </Card>
-              </Grid>
+            <Box sx={{ 
+              display: 'grid', 
+              gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, 
+              gap: 3 
+            }}>
+              <Card sx={{ 
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+                color: 'white',
+                cursor: 'pointer',
+                '&:hover': { transform: 'translateY(-4px)', transition: 'all 0.3s ease' }
+              }}>
+                <CardContent sx={{ p: 3 }}>
+                  <Typography variant="h6" gutterBottom>
+                    Basic Leave System
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 2 }}>
+                    Simple leave requests and approvals with basic functionality.
+                  </Typography>
+                  <Alert severity="warning" sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'white' }}>
+                    Limited features available
+                  </Alert>
+                </CardContent>
+              </Card>
               
-              <Grid item xs={12} md={6}>
-                <Card sx={{ 
-                  background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)', 
-                  color: 'white',
-                  cursor: 'pointer',
-                  '&:hover': { transform: 'translateY(-4px)', transition: 'all 0.3s ease' }
-                }} onClick={() => navigate('/leave-management')}>
-                  <CardContent sx={ { p: 3 }}>
-                    <Typography variant="h6" gutterBottom>
-                      Comprehensive Leave Policies
-                    </Typography>
-                    <Typography variant="body2" sx={{ mb: 2 }}>
-                      Full company policy integration with advanced features.
-                    </Typography>
-                    <Stack direction="row" spacing={1} flexWrap="wrap">
-                      <Chip label="Policy Integration" size="small" sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'white' }} />
-                      <Chip label="Payroll Integration" size="small" sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'white' }} />
-                      <Chip label="Analytics" size="small" sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'white' }} />
-                    </Stack>
-                    <Button 
-                      variant="contained" 
-                      sx={{ 
-                        mt: 2,
-                        bgcolor: 'rgba(255,255,255,0.2)', 
-                        color: 'white',
-                        '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' }
-                      }}
-                      endIcon={<ArrowForward />}
-                    >
-                      Access Full System
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
+              <Card sx={{ 
+                background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)', 
+                color: 'white',
+                cursor: 'pointer',
+                '&:hover': { transform: 'translateY(-4px)', transition: 'all 0.3s ease' }
+              }} onClick={() => navigate('/leave-management')}>
+                <CardContent sx={ { p: 3 }}>
+                  <Typography variant="h6" gutterBottom>
+                    Comprehensive Leave Policies
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 2 }}>
+                    Full company policy integration with advanced features.
+                  </Typography>
+                  <Stack direction="row" spacing={1} flexWrap="wrap">
+                    <Chip label="Policy Integration" size="small" sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'white' }} />
+                    <Chip label="Payroll Integration" size="small" sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'white' }} />
+                    <Chip label="Analytics" size="small" sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'white' }} />
+                  </Stack>
+                  <Button 
+                    variant="contained" 
+                    sx={{ 
+                      mt: 2,
+                      bgcolor: 'rgba(255,255,255,0.2)', 
+                      color: 'white',
+                      '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' }
+                    }}
+                    endIcon={<ArrowForward />}
+                  >
+                    Access Full System
+                  </Button>
+                </CardContent>
+              </Card>
+            </Box>
           </Box>
         )}
       </Paper>
@@ -521,59 +514,56 @@ const LeaveManagement: React.FC = () => {
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="md" fullWidth>
         <DialogTitle>Apply for Leave</DialogTitle>
         <DialogContent>
-          <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel>Employee</InputLabel>
-                <Select
-                  value={newLeave.employee_id}
-                  onChange={(e) => setNewLeave({...newLeave, employee_id: e.target.value})}
-                  label="Employee"
-                >
-                  {employees.map((emp) => (
-                    <MenuItem key={emp.employee_id} value={emp.employee_id}>
-                      {emp.first_name} {emp.last_name} ({emp.employee_id})
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel>Leave Type</InputLabel>
-                <Select
-                  value={newLeave.leave_type}
-                  onChange={(e) => setNewLeave({...newLeave, leave_type: e.target.value})}
-                  label="Leave Type"
-                >
-                  <MenuItem value="Annual Leave">Annual Leave</MenuItem>
-                  <MenuItem value="Sick Leave">Sick Leave</MenuItem>
-                  <MenuItem value="Personal Leave">Personal Leave</MenuItem>
-                  <MenuItem value="Emergency Leave">Emergency Leave</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Start Date"
-                type="date"
-                value={newLeave.start_date}
-                onChange={(e) => setNewLeave({...newLeave, start_date: e.target.value})}
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="End Date"
-                type="date"
-                value={newLeave.end_date}
-                onChange={(e) => setNewLeave({...newLeave, end_date: e.target.value})}
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-            <Grid item xs={12}>
+          <Box sx={{ 
+            display: 'grid', 
+            gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, 
+            gap: 2, 
+            mt: 1 
+          }}>
+            <FormControl fullWidth>
+              <InputLabel>Employee</InputLabel>
+              <Select
+                value={newLeave.employee_id}
+                onChange={(e) => setNewLeave({...newLeave, employee_id: e.target.value})}
+                label="Employee"
+              >
+                {employees.map((emp) => (
+                  <MenuItem key={emp.employee_id} value={emp.employee_id}>
+                    {emp.first_name} {emp.last_name} ({emp.employee_id})
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel>Leave Type</InputLabel>
+              <Select
+                value={newLeave.leave_type}
+                onChange={(e) => setNewLeave({...newLeave, leave_type: e.target.value})}
+                label="Leave Type"
+              >
+                <MenuItem value="Annual Leave">Annual Leave</MenuItem>
+                <MenuItem value="Sick Leave">Sick Leave</MenuItem>
+                <MenuItem value="Personal Leave">Personal Leave</MenuItem>
+                <MenuItem value="Emergency Leave">Emergency Leave</MenuItem>
+              </Select>
+            </FormControl>
+            <TextField
+              fullWidth
+              label="Start Date"
+              type="date"
+              value={newLeave.start_date}
+              onChange={(e) => setNewLeave({...newLeave, start_date: e.target.value})}
+              InputLabelProps={{ shrink: true }}
+            />
+            <TextField
+              fullWidth
+              label="End Date"
+              type="date"
+              value={newLeave.end_date}
+              onChange={(e) => setNewLeave({...newLeave, end_date: e.target.value})}
+              InputLabelProps={{ shrink: true }}
+            />
+            <Box sx={{ gridColumn: { xs: '1', sm: '1 / -1' } }}>
               <TextField
                 fullWidth
                 label="Reason"
@@ -583,8 +573,8 @@ const LeaveManagement: React.FC = () => {
                 onChange={(e) => setNewLeave({...newLeave, reason: e.target.value})}
                 placeholder="Please provide reason for leave..."
               />
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
