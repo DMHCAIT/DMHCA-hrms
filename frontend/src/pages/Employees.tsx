@@ -36,7 +36,7 @@ import {
   Search,
 } from '@mui/icons-material';
 import { supabaseService } from '../services/supabase';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/MockAuthContext';
 import CreateEmployeeDialog from '../components/admin/CreateEmployeeDialog';
 
 interface Employee {
@@ -325,16 +325,15 @@ const Employees: React.FC = () => {
             <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
               Employees Management
             </Typography>
-            {isAdmin() && (
-              <Button
-                variant="contained"
-                startIcon={<Add />}
-                onClick={() => setCreateEmployeeDialogOpen(true)}
-                disabled={loading}
-              >
-                Add Employee
-              </Button>
-            )}
+            {/* Admin has full access */}
+            <Button
+              variant="contained"
+              startIcon={<Add />}
+              onClick={() => setCreateEmployeeDialogOpen(true)}
+              disabled={loading}
+            >
+              Add Employee
+            </Button>
           </Box>
 
           {/* Filters */}

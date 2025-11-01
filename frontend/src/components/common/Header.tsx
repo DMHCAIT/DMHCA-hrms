@@ -21,7 +21,7 @@ import {
   Dashboard,
   CalendarToday,
 } from '@mui/icons-material';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/MockAuthContext';
 
 interface HeaderProps {
   title?: string;
@@ -73,11 +73,11 @@ const Header: React.FC<HeaderProps> = ({ title = 'DMHCA HRMS' }) => {
                 <Chip 
                   label={profile.role} 
                   size="small" 
-                  color={isAdmin() ? 'secondary' : 'default'}
+                  color="secondary"
                   sx={{ 
                     height: 20, 
                     fontSize: '0.7rem',
-                    backgroundColor: isAdmin() ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)',
+                    backgroundColor: 'rgba(255,255,255,0.2)',
                     color: 'white',
                   }} 
                 />
@@ -146,14 +146,7 @@ const Header: React.FC<HeaderProps> = ({ title = 'DMHCA HRMS' }) => {
                 <ListItemText>Dashboard</ListItemText>
               </MenuItem>
 
-              {!isAdmin() && (
-                <MenuItem onClick={() => { handleMenuClose(); window.location.href = '/leave'; }}>
-                  <ListItemIcon>
-                    <CalendarToday fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText>My Leaves</ListItemText>
-                </MenuItem>
-              )}
+              {/* Admin has access to everything, no employee-only sections */}
               
               <MenuItem onClick={handleMenuClose}>
                 <ListItemIcon>
