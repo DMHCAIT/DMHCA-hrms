@@ -19,7 +19,6 @@ import {
   Logout,
   Settings,
   Dashboard,
-  CalendarToday,
 } from '@mui/icons-material';
 import { useAuth } from '../../contexts/MockAuthContext';
 
@@ -28,7 +27,7 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ title = 'DMHCA HRMS' }) => {
-  const { profile, signOut, isAdmin } = useAuth();
+  const { profile, signOut } = useAuth();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {

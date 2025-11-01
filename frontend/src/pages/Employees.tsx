@@ -71,7 +71,7 @@ interface Branch {
 }
 
 const Employees: React.FC = () => {
-  const { isAdmin } = useAuth();
+  // Admin access enabled by default
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
