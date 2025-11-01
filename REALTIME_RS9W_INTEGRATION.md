@@ -43,30 +43,106 @@ This guide explains how to integrate your Realtime RS9W attendance machine with 
 
 ## 🚀 Step-by-Step Setup Instructions
 
-### Step 1: Configure Your Realtime RS9W Machine
+### Step 1: Configure Your Realtime RS9W Machines
 
-1. **Access Admin Panel:** Log into your Realtime RS9W admin interface
-2. **Navigate to API Settings:** Look for "Third-Party API" or "Data Export" settings
-3. **Enter Configuration:**
-   - **API URL:** `https://dmhcahrms.xyz/api/attendance`
-   - **Method:** POST
-   - **Auth Type:** Bearer Token
-   - **Token:** `dmhca_attendance_token_2025`
-   - **Content-Type:** application/json
+Since you have **3 machines**, configure each one with these exact settings:
 
-### Step 2: Map Data Fields
+#### **🔧 Common Settings (Same for all 3 machines):**
 
-Configure the field mapping in your RS9W machine:
-- Employee ID → `employee_code`
-- Timestamp → `log_datetime` 
-- Time → `log_time`
-- Device ID → `device_sn`
+**Request Method:** `POST` (Select from dropdown)
+**Authorization Auth Type:** `Bearer token` (Select from dropdown)  
+**Token:** `dmhca_attendance_token_2025` (Enter this EXACT token)
+**Content-Type:** `application/json` (Select from dropdown)
+**Data Sending Format:** `Body` (Select from dropdown)
+**API URL:** `https://dmhcahrms.xyz/api/attendance` (Enter this EXACT URL)
+
+#### **📋 Field Mapping Configuration (Check all these boxes):**
+
+✅ **Employee Name:** 
+- ☑️ Check the box
+- Data Type: `int` (for employee IDs) or `text` (for names)
+- Maps to API field: `employee_code`
+
+✅ **Log Date Time:**
+- ☑️ Check the box  
+- Format: `YYYY-MM-DD HH:mm:ss` (e.g., 2025-11-01 08:45:00)
+- Maps to API field: `log_datetime`
+
+✅ **Log Date:**
+- ☑️ Check the box
+- Format: `YYYY-MM-DD` (e.g., 2025-11-01)
+- Maps to API field: `log_date`
+
+✅ **Log Time:**
+- ☑️ Check the box
+- Format: `HH:mm:ss` (e.g., 08:45:00)
+- Maps to API field: `log_time`
+
+✅ **Download Date Time:**
+- ☑️ Check the box
+- Format: `YYYY-MM-DD HH:mm:ss` (e.g., 2025-11-01 08:46:00)
+- Maps to API field: `downloaded_at`
+
+✅ **Device Serial No:**
+- ☑️ Check the box
+- Data Type: `text`
+
+#### **🏢 Unique Settings per Machine:**
+
+**Machine 1:**
+- Device No: `RS9W-001` (Enter in Device Serial field)
+- Location: Main Entrance
+
+**Machine 2:** 
+- Device No: `RS9W-002` (Enter in Device Serial field)
+- Location: Office Floor
+
+**Machine 3:**
+- Device No: `RS9W-003` (Enter in Device Serial field)
+- Location: Exit Gate
+
+### Step 2: Sync Employee Data to Machines
+
+Before attendance tracking works, you need to sync all employees to each machine:
+
+#### **📥 Employee Sync Endpoint:**
+**URL:** `https://dmhcahrms.xyz/api/sync-employees`
+**Method:** GET
+**Auth:** Bearer dmhca_attendance_token_2025 (Optional)
+
+#### **🔄 How to Sync Employees:**
+
+**Option 1: Automatic Sync (Recommended)**
+- Configure your RS9W machines to periodically fetch employee list
+- Set sync schedule: Daily at 6:00 AM
+- Use the employee sync URL above
+
+**Option 2: Manual Sync**
+1. Visit: `https://dmhcahrms.xyz/api/sync-employees` 
+2. Copy the employee data
+3. Import to each RS9W machine via admin panel
+4. Repeat for all 3 machines
+
+**Employee Data Format Returned:**
+```json
+{
+  "employees": [
+    {
+      "employee_code": "E001",
+      "employee_name": "John Smith", 
+      "department": "IT",
+      "designation": "Developer"
+    }
+  ]
+}
+```
 
 ### Step 3: Set Sync Schedule
 
-- **Real-time:** Immediate sync after each punch
+- **Real-time:** Immediate sync after each punch (Recommended)
 - **Scheduled:** Every 5-15 minutes
 - **Manual:** On-demand sync
+- **Employee Sync:** Daily at 6:00 AM
 
 ## 📊 What Happens After Integration
 
@@ -111,6 +187,37 @@ Content-Type: application/json
   "message": "Check-in recorded for employee TEST001 at 09:00:00"
 }
 ```
+
+## 🏢 Multiple Machine Management (Your 3 Machines)
+
+### Machine Identification
+
+Each of your 3 machines will send data with unique device serial numbers:
+- **Machine 1:** `RS9W-001` (Main Entrance)
+- **Machine 2:** `RS9W-002` (Office Floor)  
+- **Machine 3:** `RS9W-003` (Exit Gate)
+
+### Data Flow from 3 Machines
+
+```
+Machine RS9W-001 → API → Database (device_serial: RS9W-001)
+Machine RS9W-002 → API → Database (device_serial: RS9W-002) 
+Machine RS9W-003 → API → Database (device_serial: RS9W-003)
+```
+
+### Employee Management Across Machines
+
+All 3 machines need the same employee list:
+1. **Sync employees** to all machines using: `https://dmhcahrms.xyz/api/sync-employees`
+2. **Employee codes** must be identical across all machines
+3. **New employees** require sync to all 3 machines
+
+### Tracking Location-Based Attendance
+
+Your system will automatically track which machine was used:
+- Check-in at Main Entrance (RS9W-001)
+- Check-out at Exit Gate (RS9W-003)
+- Break punches at Office Floor (RS9W-002)
 
 ## 🔍 Troubleshooting
 
