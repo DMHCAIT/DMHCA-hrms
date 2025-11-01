@@ -36,7 +36,7 @@ import {
   Search,
 } from '@mui/icons-material';
 import { supabaseService } from '../services/supabase';
-import { useAuth } from '../contexts/MockAuthContext';
+// Auth removed - direct admin access enabled
 import CreateEmployeeDialog from '../components/admin/CreateEmployeeDialog';
 
 interface Employee {
