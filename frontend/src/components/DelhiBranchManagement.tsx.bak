@@ -22,7 +22,8 @@ import {
   DialogActions,
   TextField,
   CircularProgress,
-  Snackbar
+  Snackbar,
+  Grid
 } from '@mui/material';
 import {
   People as PeopleIcon,
@@ -129,7 +130,7 @@ const DelhiBranchManagement: React.FC = () => {
       
       if (data.success) {
         showSnackbar(`Successfully synced ${data.synced_count || 0} employees`, 'success');
-        await loadEmployees();
+        await loadEmployees(); // Reload to get updated data
       } else {
         showSnackbar('Sync failed: ' + data.message, 'error');
       }
@@ -232,106 +233,124 @@ const DelhiBranchManagement: React.FC = () => {
       </Paper>
 
       {/* Statistics Cards */}
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, gap: 3, mb: 4 }}>
-        <StatCard
-          title="Total Employees"
-          value={totalEmployees}
-          icon={<PeopleIcon />}
-          color="#667eea"
-        />
-        <StatCard
-          title="RS9W Machines"
-          value={3}
-          icon={<SettingsIcon />}
-          color="#51cf66"
-        />
-        <StatCard
-          title="Branch Code"
-          value="DEL"
-          icon={<BusinessIcon />}
-          color="#ffd43b"
-        />
-        <StatCard
-          title="Department"
-          value="DMHCA"
-          icon={<BusinessIcon />}
-          color="#ff8cc8"
-        />
-      </Box>
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard
+            title="Total Employees"
+            value={totalEmployees}
+            icon={<PeopleIcon />}
+            color="#667eea"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard
+            title="RS9W Machines"
+            value={3}
+            icon={<SettingsIcon />}
+            color="#51cf66"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard
+            title="Branch Code"
+            value="DEL"
+            icon={<BusinessIcon />}
+            color="#ffd43b"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard
+            title="Department"
+            value="DMHCA"
+            icon={<BusinessIcon />}
+            color="#ff8cc8"
+          />
+        </Grid>
+      </Grid>
 
       {/* RS9W Machine Configuration */}
       <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
         <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
           🔧 RS9W Machine Configuration
         </Typography>
-        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 2 }}>
+        <Grid container spacing={2}>
           {machineConfig.map((machine) => (
-            <Card key={machine.id} sx={{ background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)', color: 'white' }}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  📍 {machine.name}
-                </Typography>
-                <Typography variant="body2">
-                  <strong>Serial:</strong> {machine.serial}
-                </Typography>
-                <Typography variant="body2">
-                  <strong>Location:</strong> {machine.location}
-                </Typography>
-                <Typography variant="body2">
-                  <strong>Status:</strong> {machine.status}
-                </Typography>
-              </CardContent>
-            </Card>
+            <Grid item xs={12} md={4} key={machine.id}>
+              <Card sx={{ background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)', color: 'white' }}>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    📍 {machine.name}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Serial:</strong> {machine.serial}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Location:</strong> {machine.location}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Status:</strong> {machine.status}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
           ))}
-        </Box>
+        </Grid>
       </Paper>
 
       {/* Action Buttons */}
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, gap: 2, mb: 4 }}>
-        <Button
-          variant="contained"
-          fullWidth
-          startIcon={loading ? <CircularProgress size={20} /> : <RefreshIcon />}
-          onClick={loadEmployees}
-          disabled={loading}
-          sx={{ py: 2 }}
-        >
-          Load Employees
-        </Button>
-        <Button
-          variant="contained"
-          color="success"
-          fullWidth
-          startIcon={<CloudSyncIcon />}
-          onClick={syncToDatabase}
-          disabled={loading}
-          sx={{ py: 2 }}
-        >
-          Sync to Database
-        </Button>
-        <Button
-          variant="contained"
-          color="info"
-          fullWidth
-          startIcon={<DownloadIcon />}
-          onClick={exportCSV}
-          disabled={loading}
-          sx={{ py: 2 }}
-        >
-          Export CSV
-        </Button>
-        <Button
-          variant="contained"
-          color="warning"
-          fullWidth
-          startIcon={<SettingsIcon />}
-          onClick={rs9wFormat}
-          disabled={loading}
-          sx={{ py: 2 }}
-        >
-          RS9W Format
-        </Button>
-      </Box>
+      <Grid container spacing={2} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <Button
+            variant="contained"
+            fullWidth
+            startIcon={loading ? <CircularProgress size={20} /> : <RefreshIcon />}
+            onClick={loadEmployees}
+            disabled={loading}
+            sx={{ py: 2 }}
+          >
+            Load Employees
+          </Button>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Button
+            variant="contained"
+            color="success"
+            fullWidth
+            startIcon={<CloudSyncIcon />}
+            onClick={syncToDatabase}
+            disabled={loading}
+            sx={{ py: 2 }}
+          >
+            Sync to Database
+          </Button>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Button
+            variant="contained"
+            color="info"
+            fullWidth
+            startIcon={<DownloadIcon />}
+            onClick={exportCSV}
+            disabled={loading}
+            sx={{ py: 2 }}
+          >
+            Export CSV
+          </Button>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Button
+            variant="contained"
+            color="warning"
+            fullWidth
+            startIcon={<SettingsIcon />}
+            onClick={rs9wFormat}
+            disabled={loading}
+            sx={{ py: 2 }}
+          >
+            RS9W Format
+          </Button>
+        </Grid>
+      </Grid>
 
       {/* Employee Table */}
       {employees.length > 0 && (
@@ -356,7 +375,7 @@ const DelhiBranchManagement: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {employees.map((employee) => (
+                {employees.map((employee, index) => (
                   <TableRow key={employee.cardno} hover>
                     <TableCell>
                       <Chip label={employee.cardno} variant="outlined" />
@@ -417,34 +436,40 @@ const DelhiBranchManagement: React.FC = () => {
         <DialogTitle>Edit Employee</DialogTitle>
         <DialogContent>
           {selectedEmployee && (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-              <TextField
-                fullWidth
-                label="Employee Name"
-                value={selectedEmployee.empname}
-                disabled
-              />
-              <Box sx={{ display: 'flex', gap: 2 }}>
+            <Grid container spacing={2} sx={{ mt: 1 }}>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Employee Name"
+                  value={selectedEmployee.empname}
+                  disabled
+                />
+              </Grid>
+              <Grid item xs={6}>
                 <TextField
                   fullWidth
                   label="Card Number"
                   value={selectedEmployee.cardno}
                   disabled
                 />
+              </Grid>
+              <Grid item xs={6}>
                 <TextField
                   fullWidth
                   label="Employee Code"
                   value={selectedEmployee.empcode}
                   disabled
                 />
-              </Box>
-              <TextField
-                fullWidth
-                label="Branch"
-                value={selectedEmployee.branch}
-                disabled
-              />
-            </Box>
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Branch"
+                  value={selectedEmployee.branch}
+                  disabled
+                />
+              </Grid>
+            </Grid>
           )}
         </DialogContent>
         <DialogActions>
