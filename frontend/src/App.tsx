@@ -17,7 +17,6 @@ import Worksheets from './pages/Worksheets';
 import EmployeeDashboard from './components/employee/EmployeeDashboard';
 import EmployeeSettings from './components/employee/EmployeeSettings';
 import EmployeeLeaveManagement from './components/employee/EmployeeLeaveManagement';
-import DelhiBranchManagement from './components/DelhiBranchManagement';
 
 // Main app content - NO AUTHENTICATION REQUIRED
 const AppContent: React.FC = () => {
@@ -39,7 +38,6 @@ const AppContent: React.FC = () => {
             <Route path="/employee-view" element={<EmployeeDashboard />} />
             <Route path="/my-leave" element={<EmployeeLeaveManagement />} />
             <Route path="/settings" element={<EmployeeSettings />} />
-            <Route path="/delhi-branch" element={<DelhiBranchManagement />} />
           </Routes>
         </Layout>
       </Router>

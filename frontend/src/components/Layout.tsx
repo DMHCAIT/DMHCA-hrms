@@ -33,7 +33,6 @@ import {
   AccountCircle,
   Settings,
   Logout,
-  Business,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -46,7 +45,6 @@ interface LayoutProps {
 const menuItems = [
   { text: 'Dashboard', icon: <Dashboard />, path: '/' },
   { text: 'Employees', icon: <People />, path: '/employees' },
-  { text: 'Delhi Branch', icon: <Business />, path: '/delhi-branch' },
   { text: 'Attendance', icon: <Schedule />, path: '/attendance' },
   { text: 'Leave Management', icon: <EventNote />, path: '/leave' },
   { text: 'Leave Policies', icon: <EventNote />, path: '/leave-management' },
