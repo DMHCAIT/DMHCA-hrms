@@ -1,0 +1,12 @@
+{
+  "name": "hr-attendance-api",
+  "version": "1.0.0",
+  "description": "Attendance API for Realtime RS9W Integration",
+  "main": "attendance.js",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.76.1"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
