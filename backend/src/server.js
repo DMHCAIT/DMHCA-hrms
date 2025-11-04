@@ -86,10 +86,11 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // CORS configuration
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
+const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || process.env.ALLOWED_ORIGINS?.split(',') || [
   'http://localhost:5173',
   'https://dmhcahrms.xyz',
-  'https://www.dmhcahrms.xyz'
+  'https://www.dmhcahrms.xyz',
+  'https://dmhca-hrms.vercel.app'
 ];
 
 app.use(cors({
@@ -109,17 +110,34 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
 }));
 
-// Health check endpoint
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({
+    message: 'DMHCA HR Management System API',
+    status: 'Running',
+    version: '1.0.0',
+    endpoints: {
+      health: '/health',
+      attendance: '/api/attendance',
+      employees: '/api/employees'
+    }
+  });
+});
+
+// Health check endpoint with explicit CORS handling
+app.options('/health', cors()); // Enable pre-flight for health endpoint
 app.get('/health', (req, res) => {
   res.json({
     status: 'OK',
     timestamp: new Date().toISOString(),
     service: 'HR Software Backend',
-    version: '1.0.0'
+    version: '1.0.0',
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
-// API Routes
+// API Routes with CORS preflight handling
+app.options('/api/*', cors()); // Enable pre-flight for all API routes
 app.use('/api/attendance', attendanceRouter);
 app.use('/api/employees', employeeRouter);
 
