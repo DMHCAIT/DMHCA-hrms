@@ -1,5 +1,5 @@
 // API Configuration and Base Service
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
 const API_PRODUCTION_URL = import.meta.env.VITE_API_PRODUCTION_URL;
 
 // Determine which API URL to use based on environment
@@ -64,7 +64,7 @@ export const employeeAPI = {
 
   // Create new employee
   createEmployee: async (employeeData: any) => {
-    return apiRequest('/employees', {
+    return apiRequest('/api/employees', {
       method: 'POST',
       body: JSON.stringify(employeeData),
     });
@@ -87,7 +87,7 @@ export const employeeAPI = {
 
   // Sync employees with biometric device
   syncEmployees: async () => {
-    return apiRequest('/employees/sync', {
+    return apiRequest('/api/employees/sync', {
       method: 'POST',
     });
   },
@@ -115,7 +115,7 @@ export const attendanceAPI = {
 
   // Record attendance from biometric device
   recordAttendance: async (attendanceData: any, token: string) => {
-    return apiRequest('/attendance/record', {
+    return apiRequest('/api/attendance/record', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -127,7 +127,7 @@ export const attendanceAPI = {
 
   // Get today's attendance summary
   getTodaysSummary: async () => {
-    return apiRequest('/attendance/today');
+    return apiRequest('/api/attendance/today');
   },
 
   // Get attendance statistics

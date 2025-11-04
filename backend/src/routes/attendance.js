@@ -4,8 +4,8 @@ import { createClient } from '@supabase/supabase-js';
 const router = express.Router();
 
 // Supabase configuration
-const supabaseUrl = process.env.SUPABASE_URL || 'https://dmhcahrmssystem.supabase.co';
-const supabaseKey = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRtaGNhaHJtc3N5c3RlbSIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzMwNDU0MTY4LCJleHAiOjIwNDYwMzAxNjh9.XYTaF5vRhPGiT60jBT40qEyNQzo8t0R4Lv5FDl7WNqI';
+const supabaseUrl = process.env.SUPABASE_URL || 'https://ocvtacsuwkwzbpwnmlsd.supabase.co';
+const supabaseKey = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jdnRhY3N1d2t3emJwd25tbHNkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMDc3MjYsImV4cCI6MjA3Njg4MzcyNn0.JJTuluIEZfVhFTonnaXCkiuzoD5AHZs0S_MjqdEn1DA';
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
