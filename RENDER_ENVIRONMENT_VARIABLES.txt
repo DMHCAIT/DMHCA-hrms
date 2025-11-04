@@ -1,0 +1,23 @@
+# RENDER BACKEND ENVIRONMENT VARIABLES - COPY THESE EXACTLY
+
+NODE_ENV=production
+PORT=3001
+
+# CRITICAL: CORS Configuration (THIS FIXES THE ERROR)
+CORS_ORIGIN=https://www.dmhcahrms.xyz,https://dmhcahrms.xyz,https://dmhca-hrms.vercel.app,http://localhost:5173,http://localhost:3000
+
+# Supabase Database Configuration
+SUPABASE_URL=https://ocvtacsuwkwzbpwnmlsd.supabase.co
+SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jdnRhY3N1d2t3emJwd25tbHNkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMDc3MjYsImV4cCI6MjA3Njg4MzcyNn0.JJTuluIEZfVhFTonnaXCkiuzoD5AHZs0S_MjqdEn1DA
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jdnRhY3N1d2t3emJwd25tbHNkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MTMwNzcyNiwiZXhwIjoyMDc2ODgzNzI2fQ.Y15n2Y1X2dxdAnaA8iasIqYsWHc0zQF8czQNXxOCv7g
+
+# API Authentication
+ATTENDANCE_API_TOKEN=dmhca_attendance_token_2025
+
+# Security Configuration
+JWT_SECRET=dmhca_jwt_secret_production_2025_change_this
+BCRYPT_SALT_ROUNDS=12
+
+# Logging Configuration
+LOG_LEVEL=info
+LOG_FILE=./logs/combined.log

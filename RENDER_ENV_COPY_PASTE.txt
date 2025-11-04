@@ -1,0 +1,6 @@
+NODE_ENV=production
+PORT=3001
+CORS_ORIGIN=https://www.dmhcahrms.xyz,https://dmhcahrms.xyz,https://dmhca-hrms.vercel.app
+SUPABASE_URL=https://ocvtacsuwkwzbpwnmlsd.supabase.co
+SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jdnRhY3N1d2t3emJwd25tbHNkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMDc3MjYsImV4cCI6MjA3Njg4MzcyNn0.JJTuluIEZfVhFTonnaXCkiuzoD5AHZs0S_MjqdEn1DA
+ATTENDANCE_API_TOKEN=dmhca_attendance_token_2025
