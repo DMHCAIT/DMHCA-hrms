@@ -6,8 +6,8 @@ import rateLimit from 'express-rate-limit';
 import compression from 'compression';
 import morgan from 'morgan';
 import winston from 'winston';
-import attendanceRoutes from './routes/attendance.js';
-import employeesRoutes from './routes/employees.js';
+import attendanceRouter from './routes/attendance.js';
+import employeeRouter from './routes/employees.js';
 
 // Load environment variables
 dotenv.config();
@@ -124,7 +124,7 @@ app.use('/api/attendance', attendanceRouter);
 app.use('/api/employees', employeeRouter);
 
 // Global error handling middleware
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
   logger.error('Unhandled error:', {
     error: err.message,
     stack: err.stack,

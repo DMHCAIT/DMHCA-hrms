@@ -163,8 +163,36 @@ export const apiService = {
   
   // Attendance methods
   getAttendanceRecords: attendanceAPI.getAttendanceRecords,
+  getAttendance: attendanceAPI.getAttendanceRecords, // Alias for backward compatibility
   getTodaysSummary: attendanceAPI.getTodaysSummary,
   getAttendanceStats: attendanceAPI.getAttendanceStats,
+  
+  // Health check
+  getHealthCheck: healthAPI.checkBackend,
+  
+  // Department methods (mock for backward compatibility)
+  getDepartments: async () => {
+    // Mock departments for backward compatibility
+    return {
+      data: [
+        { id: '1', name: 'Human Resources', description: 'HR Department' },
+        { id: '2', name: 'Information Technology', description: 'IT Department' },
+        { id: '3', name: 'Finance', description: 'Finance Department' },
+        { id: '4', name: 'Administration', description: 'Admin Department' },
+        { id: '5', name: 'Operations', description: 'Operations Department' }
+      ]
+    };
+  },
+  
+  // Branches method (mock for backward compatibility)
+  getBranches: async () => {
+    // Mock branches for backward compatibility
+    return {
+      data: [
+        { id: '1', name: 'Main Office', address: 'DMHCA Main Campus' }
+      ]
+    };
+  }
 };
 
 // Export the base API URL for direct usage if needed
