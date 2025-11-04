@@ -9,7 +9,6 @@
     "build:prod": "vite build --mode production",
     "build:vercel": "vite build --mode production",
     "type-check": "tsc --noEmit",
-    "postinstall": "node -e \"try { require('@rollup/rollup-linux-x64-gnu') } catch (e) { console.log('Linux rollup package available or not needed') }\"",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint . --ext ts,tsx --fix",
     "preview": "vite preview",

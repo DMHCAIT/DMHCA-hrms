@@ -36,8 +36,7 @@ export default defineConfig(({ mode }) => {
             // Separate vendor chunks for better caching
             'react-vendor': ['react', 'react-dom', 'react-router-dom'],
             'mui-vendor': ['@mui/material', '@mui/icons-material', '@mui/system', '@emotion/react'],
-            'date-vendor': ['date-fns', 'moment'],
-            'utils-vendor': ['lodash', 'uuid'],
+            'date-vendor': ['date-fns'],
           },
           // Clean asset naming
           chunkFileNames: (chunkInfo) => {
