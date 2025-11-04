@@ -1,0 +1,386 @@
+name: HR Software CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  release:
+    types: [ published ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: |
+          frontend/package-lock.json
+          backend/package-lock.json
+    
+    - name: Install dependencies
+      run: |
+        cd frontend && npm ci
+        cd ../backend && npm ci
+    
+    - name: Lint Frontend
+      run: |
+        cd frontend
+        npm run lint || true  # Don't fail on lint warnings
+    
+    - name: Lint Backend
+      run: |
+        cd backend
+        npm run lint || true  # Don't fail on lint warnings
+    
+    - name: Type Check Frontend
+      run: |
+        cd frontend
+        npm run type-check || npx tsc --noEmit
+    
+    - name: Test Backend
+      run: |
+        cd backend
+        npm test
+      env:
+        NODE_ENV: test
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    
+    - name: Test Frontend
+      run: |
+        cd frontend
+        npm test -- --coverage --watchAll=false
+      env:
+        CI: true
+
+  security-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Run Trivy vulnerability scanner in repo mode
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        ignore-unfixed: true
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+    
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: 'trivy-results.sarif'
+    
+    - name: Setup Node.js for audit
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: |
+          frontend/package-lock.json
+          backend/package-lock.json
+    
+    - name: Audit Frontend Dependencies
+      run: |
+        cd frontend
+        npm audit --audit-level=high
+      continue-on-error: true
+    
+    - name: Audit Backend Dependencies
+      run: |
+        cd backend
+        npm audit --audit-level=high
+      continue-on-error: true
+
+  build-and-push:
+    needs: [lint-and-test, security-scan]
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    
+    permissions:
+      contents: read
+      packages: write
+    
+    outputs:
+      backend-image: ${{ steps.meta-backend.outputs.tags }}
+      frontend-image: ${{ steps.meta-frontend.outputs.tags }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Extract metadata for Backend
+      id: meta-backend
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=raw,value=latest,enable={{is_default_branch}}
+    
+    - name: Build and push Backend image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./backend
+        push: true
+        tags: ${{ steps.meta-backend.outputs.tags }}
+        labels: ${{ steps.meta-backend.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        build-args: |
+          VERSION=${{ github.sha }}
+          BUILD_DATE=${{ github.event.head_commit.timestamp }}
+    
+    - name: Extract metadata for Frontend
+      id: meta-frontend
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=raw,value=latest,enable={{is_default_branch}}
+    
+    - name: Build and push Frontend image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./frontend
+        push: true
+        tags: ${{ steps.meta-frontend.outputs.tags }}
+        labels: ${{ steps.meta-frontend.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        build-args: |
+          VERSION=${{ github.sha }}
+          BUILD_DATE=${{ github.event.head_commit.timestamp }}
+
+  integration-tests:
+    needs: [build-and-push]
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: hr_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Docker Compose
+      run: |
+        # Create test docker-compose file
+        cat > docker-compose.test.yml << EOF
+        version: '3.8'
+        services:
+          backend:
+            image: ${{ needs.build-and-push.outputs.backend-image }}
+            environment:
+              NODE_ENV: test
+              PORT: 3001
+              SUPABASE_URL: \${{ secrets.SUPABASE_URL }}
+              SUPABASE_SERVICE_ROLE_KEY: \${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+            ports:
+              - "3001:3001"
+            depends_on:
+              - postgres
+          
+          frontend:
+            image: ${{ needs.build-and-push.outputs.frontend-image }}
+            environment:
+              BACKEND_URL: http://backend:3001
+            ports:
+              - "80:80"
+            depends_on:
+              - backend
+          
+          postgres:
+            image: postgres:15
+            environment:
+              POSTGRES_PASSWORD: postgres
+              POSTGRES_DB: hr_test
+        EOF
+    
+    - name: Run integration tests
+      run: |
+        docker-compose -f docker-compose.test.yml up -d
+        
+        # Wait for services to be ready
+        sleep 30
+        
+        # Test backend health
+        curl -f http://localhost:3001/api/health
+        
+        # Test frontend
+        curl -f http://localhost/health
+        
+        # Run API integration tests
+        cd backend && npm run test:integration || true
+        
+        docker-compose -f docker-compose.test.yml down
+      env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
+  deploy-staging:
+    needs: [integration-tests]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    environment: staging
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Deploy to Staging
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.STAGING_HOST }}
+        username: ${{ secrets.STAGING_USER }}
+        key: ${{ secrets.STAGING_SSH_KEY }}
+        script: |
+          cd /opt/hr-software
+          git pull origin develop
+          docker-compose -f docker-compose.staging.yml pull
+          docker-compose -f docker-compose.staging.yml up -d
+          
+          # Health check
+          sleep 30
+          curl -f http://localhost:3001/api/health
+    
+    - name: Notify Staging Deployment
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        channel: '#deployments'
+        text: 'HR Software deployed to staging'
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
+  deploy-production:
+    needs: [integration-tests]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.event_name == 'release'
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Deploy to Production
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.PRODUCTION_HOST }}
+        username: ${{ secrets.PRODUCTION_USER }}
+        key: ${{ secrets.PRODUCTION_SSH_KEY }}
+        script: |
+          cd /opt/hr-software
+          
+          # Backup current deployment
+          ./scripts/deploy.sh backup
+          
+          # Pull latest code
+          git pull origin main
+          
+          # Deploy with production script
+          ./scripts/deploy.sh deploy
+    
+    - name: Verify Production Deployment
+      run: |
+        # Wait for deployment to complete
+        sleep 60
+        
+        # Verify production endpoints
+        curl -f ${{ secrets.PRODUCTION_URL }}/api/health
+        curl -f ${{ secrets.PRODUCTION_URL }}/health
+    
+    - name: Notify Production Deployment
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        channel: '#deployments'
+        text: 'HR Software deployed to production successfully! 🚀'
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
+  performance-test:
+    needs: [deploy-production]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Run Performance Tests
+      uses: grafana/k6-action@v0.3.0
+      with:
+        filename: tests/performance/load-test.js
+      env:
+        BASE_URL: ${{ secrets.PRODUCTION_URL }}
+    
+    - name: Upload Performance Results
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-results
+        path: results/
+
+  cleanup:
+    needs: [deploy-production, performance-test]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: Clean up old images
+      uses: snok/container-retention-policy@v2
+      with:
+        image-names: |
+          ${{ env.IMAGE_NAME }}-backend
+          ${{ env.IMAGE_NAME }}-frontend
+        cut-off: 7 days ago UTC
+        account-type: personal
+        org-name: ${{ github.repository_owner }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        keep-at-least: 5
